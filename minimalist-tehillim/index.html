@@ -19,7 +19,7 @@
   --done:#1E9E73; --done-ink:#FFFFFF; --done-soft:#DDF5EA; --done-grad:linear-gradient(135deg,#2DB886 0%,#1E9E73 100%);
   --shadow:0 1px 2px rgba(22,32,58,.05),0 8px 24px -10px rgba(52,78,150,.22);
   --shadow-press:0 1px 2px rgba(22,32,58,.08);
-  --glow:0 10px 24px -8px rgba(62,108,242,.55);
+  --glow:0 10px 24px -8px rgba(var(--accent-rgb),.55); --accent-rgb:62,108,242; --ring-a:#5B7DFA; --ring-b:#3EC3C8;
   --r-lg:22px; --r-md:16px; --r-sm:12px;
   --ui:'AppUI','Heebo','Assistant',system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
   --heb:'AppSerif','Noto Serif Hebrew','Frank Ruhl Libre','SBL Hebrew','Ezra SIL','Times New Roman',serif;
@@ -36,7 +36,7 @@
     --accent:#7C9BFF; --accent-soft:#1F2B4D; --tonal:#243360; --accent-ink:#0C1220;
     --grad:linear-gradient(135deg,#7C9BFF 0%,#5AA9FF 100%);
     --done:#5FD3A5; --done-ink:#0C1220; --done-soft:#17352B; --done-grad:linear-gradient(135deg,#6FDDB1 0%,#4CC596 100%);
-    --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px -10px rgba(0,0,0,.55); --glow:0 10px 24px -8px rgba(90,140,255,.45);
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px -10px rgba(0,0,0,.55); --glow:0 10px 24px -8px rgba(var(--accent-rgb),.45); --accent-rgb:90,140,255;
   }
 }
 :root[data-theme="dark"]{
@@ -44,10 +44,11 @@
   --accent:#7C9BFF; --accent-soft:#1F2B4D; --tonal:#243360; --accent-ink:#0C1220;
   --grad:linear-gradient(135deg,#7C9BFF 0%,#5AA9FF 100%);
   --done:#5FD3A5; --done-ink:#0C1220; --done-soft:#17352B; --done-grad:linear-gradient(135deg,#6FDDB1 0%,#4CC596 100%);
-  --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px -10px rgba(0,0,0,.55); --glow:0 10px 24px -8px rgba(90,140,255,.45);
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px -10px rgba(0,0,0,.55); --glow:0 10px 24px -8px rgba(var(--accent-rgb),.45); --accent-rgb:90,140,255;
 }
 :root[data-font="print"]{--vfont:var(--heb)}
 *,*::before,*::after{box-sizing:border-box}
+@media (min-width:700px){#app{padding:0 28px;gap:14px}.verse{padding:0 6%}#plist .grid{grid-template-columns:repeat(8,1fr)}}
 html{scroll-padding-top:env(safe-area-inset-top,0px);background:var(--bg)}
 html,body{height:100%;margin:0}
 body{
@@ -66,7 +67,7 @@ button{font:inherit;color:inherit;cursor:pointer;-webkit-tap-highlight-color:tra
 button:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
 svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
 
-#app{height:100%;max-width:560px;margin:0 auto;padding:0 16px;display:flex;flex-direction:column;gap:10px}
+#app{height:100%;max-width:1024px;margin:0 auto;padding:0 16px;display:flex;flex-direction:column;gap:10px}
 
 /* shared look: white card, soft shadow, no hard borders */
 .pk-btn,.icon-btn,.chips,.pcard,.stage-wrap,.back,.btn,.seg{box-shadow:var(--shadow)}
@@ -97,7 +98,7 @@ header{display:flex;align-items:center;justify-content:space-between;gap:8px;pad
 /* press feel: quick, light, springy */
 .pk-btn,.icon-btn,.chip,.back,.primary,.btn,.endagain,.seg button,.cell,.prow{transition:transform .12s cubic-bezier(.2,.8,.3,1),box-shadow .12s,background-color .15s,color .15s,opacity .15s}
 .pk-btn:active,.icon-btn:active,.back:active,.btn:active,.endagain:active,.cell:active,.prow:active{transform:scale(.97);box-shadow:var(--shadow-press)}
-.primary:active{transform:scale(.975);box-shadow:0 4px 10px -6px rgba(62,108,242,.6)}
+.primary:active{transform:scale(.975);box-shadow:0 4px 10px -6px rgba(var(--accent-rgb),.6)}
 .chip:active,.seg button:active{transform:scale(.95)}
 
 /* picker grid */
@@ -119,7 +120,7 @@ header{display:flex;align-items:center;justify-content:space-between;gap:8px;pad
 }
 .chip.done{background:var(--done-soft);color:var(--done)}
 .chip.done::after{content:"✓";position:absolute;top:2px;inset-inline-end:5px;font-size:9px;line-height:1}
-.chip[aria-current="true"]{background:var(--grad);color:var(--accent-ink);box-shadow:0 6px 14px -6px rgba(62,108,242,.6)}
+.chip[aria-current="true"]{background:var(--grad);color:var(--accent-ink);box-shadow:0 6px 14px -6px rgba(var(--accent-rgb),.6)}
 
 /* progress card: ring + reference */
 .pcard{display:flex;align-items:center;gap:16px;padding:8px 16px;background:var(--surface);border-radius:var(--r-lg)}
@@ -213,7 +214,7 @@ header{display:flex;align-items:center;justify-content:space-between;gap:8px;pad
 /* sheets */
 .scrim{position:fixed;inset:0;background:rgba(14,22,44,.45);z-index:10;-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}
 .sheet{
-  position:fixed;left:0;right:0;bottom:0;z-index:11;margin:0 auto;max-width:560px;max-height:90%;
+  position:fixed;left:0;right:0;bottom:0;z-index:11;margin:0 auto;max-width:720px;max-height:90%;
   display:flex;flex-direction:column;background:var(--surface);color:var(--ink);
   border-radius:28px 28px 0 0;box-shadow:0 -12px 48px rgba(14,22,44,.25);
   padding:16px 16px calc(16px + env(safe-area-inset-bottom,0px));
@@ -223,7 +224,7 @@ header{display:flex;align-items:center;justify-content:space-between;gap:8px;pad
 .sheet .btn:not(.solid):not(.danger){background:var(--bg)}
 .sheet-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
 .sheet-head h2{margin:0;font-size:20px;font-weight:700}
-.sheet-body{overflow-y:auto;overscroll-behavior:contain;padding:2px}
+.sheet-body{overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;padding:2px}
 #picker .sheet-body{padding:8px 10px 6px}
 .head-actions{display:flex;align-items:center;gap:8px;margin-inline-start:auto}
 .sheet-head .sheet-sub{margin:0}
@@ -312,13 +313,19 @@ header{display:flex;align-items:center;justify-content:space-between;gap:8px;pad
 .seg{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:4px;background:var(--surface);padding:4px;border-radius:var(--r-md);border:0}
 .sheet .seg{background:var(--bg)}
 .seg button{min-height:44px;border:0;background:transparent;border-radius:12px;font-size:15px;font-weight:500;color:var(--muted);padding:0 6px}
-.seg button[aria-pressed="true"]{background:var(--grad);color:var(--accent-ink);font-weight:600;box-shadow:0 6px 14px -6px rgba(62,108,242,.6)}
+.seg button[aria-pressed="true"]{background:var(--grad);color:var(--accent-ink);font-weight:600;box-shadow:0 6px 14px -6px rgba(var(--accent-rgb),.6)}
 input[type=range]{width:100%;height:32px;accent-color:var(--accent);margin:0}
 .preview{text-align:center;direction:rtl;font-family:var(--vfont);font-size:var(--vsize);line-height:1.9;margin:6px 0 0;overflow:hidden;white-space:nowrap}
+.swatches{display:flex;gap:14px;align-items:center}
+.swatches button{width:44px;height:44px;border-radius:50%;border:0;padding:0;background:var(--sw);position:relative;box-shadow:inset 0 0 0 1px rgba(0,0,0,.06)}
+.swatches button::after{content:'';position:absolute;inset:-5px;border-radius:50%;border:2.5px solid transparent;transition:border-color .15s}
+.swatches button[aria-pressed="true"]::after{border-color:var(--sw)}
+.swatches button[aria-pressed="true"]::before{content:'';position:absolute;left:50%;top:50%;width:12px;height:6px;margin:-5px 0 0 -6px;border:solid #fff;border-width:0 0 3px 3px;transform:rotate(-45deg)}
+.swatches button:active{transform:scale(.92)}
 .switch-row{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:48px}
 .switch-row .lbl{margin:0;font-size:15px;font-weight:600}
 .switch-row small{display:block;font-weight:400;color:var(--muted);font-size:13px}
-.switch::before{content:'';position:absolute;inset:-7px -4px}
+.switch::before{content:'';position:absolute;inset:-7px 0}
 .switch{position:relative;width:54px;height:32px;border-radius:16px;border:0;background:var(--line);flex:none;padding:0}
 .switch::after{content:'';position:absolute;top:3px;inset-inline-start:3px;width:26px;height:26px;border-radius:50%;background:#fff;box-shadow:0 2px 4px rgba(0,0,0,.25)}
 .switch[aria-checked="true"]{background:var(--grad)}
@@ -379,7 +386,7 @@ input[type=range]{width:100%;height:32px;accent-color:var(--accent);margin:0}
   <div class="pcard" id="pcard">
     <div id="tally">
       <div class="ring" role="progressbar" aria-label="Progress through this aliyah" aria-valuemin="0" aria-valuemax="100" id="bar">
-        <svg viewBox="0 0 80 80" aria-hidden="true"><defs><linearGradient id="rg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5B7DFA"/><stop offset="1" stop-color="#3EC3C8"/></linearGradient></defs><circle class="trk" cx="40" cy="40" r="34.5"/><circle class="prg" id="barFill" cx="40" cy="40" r="34.5"/></svg>
+        <svg viewBox="0 0 80 80" aria-hidden="true"><defs><linearGradient id="rg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" style="stop-color:var(--ring-a)"/><stop offset="1" style="stop-color:var(--ring-b)"/></linearGradient></defs><circle class="trk" cx="40" cy="40" r="34.5"/><circle class="prg" id="barFill" cx="40" cy="40" r="34.5"/></svg>
         <span class="cnt" id="verseTxt"></span>
       </div>
     </div>
@@ -510,6 +517,15 @@ input[type=range]{width:100%;height:32px;accent-color:var(--accent);margin:0}
         <button data-v="dark" data-i="dark"></button>
       </div>
     </div>
+    <div class="row">
+      <div class="lbl" id="lblColor" data-i="color"></div>
+      <div class="swatches" id="swatches" role="group" aria-labelledby="lblColor">
+        <button data-v="blue" data-ta-i="cBlue" style="--sw:#4A6CF7"></button>
+        <button data-v="purple" data-ta-i="cPurple" style="--sw:#7255EB"></button>
+        <button data-v="green" data-ta-i="cGreen" style="--sw:#1F9361"></button>
+        <button data-v="rose" data-ta-i="cRose" style="--sw:#D9466F"></button>
+      </div>
+    </div>
     <div class="row switch-row" id="kqRow" hidden>
       <span class="lbl" id="lblKq"><span data-i="kqLabel"></span><small data-i="kqSub"></small></span>
       <button class="switch" id="kqSwitch" role="switch" aria-checked="false" aria-labelledby="lblKq"></button>
@@ -543,23 +559,29 @@ var lastNavAt = 0, GUARD_MS = 400, liveReady = false;   /* a second press right 
 /* cfg.modes / cfg.fonts: which text modes and fonts the app offers. A single choice is fixed and its control is hidden; saved values outside the list are ignored. */
 var MODES = CFG.modes || ['full','nikud','plain'], FONTS = CFG.fonts || ['torah','print'];
 var KEY = CFG.key, OLD_KEY = CFG.legacy || '';
-var DEFAULTS = Object.assign({mode:'full', font:'torah', size:34, theme:'auto', wake:true, lang:'he', kq:false, where:detectIsrael() ? 'il' : 'dia'}, CFG.defaults || {});
+var DEFAULTS = Object.assign({mode:'full', font:'torah', size:34, theme:'auto', wake:true, lang:'en', accent:'blue', kq:false, where:detectIsrael() ? 'il' : 'dia'}, CFG.defaults || {});
 var SAMPLE = CFG.sample;
 var settings = Object.assign({}, DEFAULTS);
 var state = {slug:MAIN[0], a:0, verse:0, finished:false, main:MAIN[0]};
+var ACCENTS = {   /* [accent, gradient from, gradient to, soft tint, tonal tint, rgb for shadows, ring from, ring to] for light and dark */
+  blue:   {l:['#4A6CF7','#5B7DFA','#3E8CF2','#E8EEFF','#DCE5FF','62,108,242','#5B7DFA','#3EC3C8'],  d:['#7C9BFF','#7C9BFF','#5AA9FF','#1F2B4D','#243360','90,140,255','#7C9BFF','#5CD3D8']},
+  purple: {l:['#7255EB','#8A6CF5','#6A4DE3','#EFEAFF','#E3DAFF','106,77,227','#8A6CF5','#C77DF0'],  d:['#A58BFF','#A58BFF','#8C72FF','#2A2350','#34296E','140,114,255','#A58BFF','#D98BFF']},
+  green:  {l:['#1F9361','#2BB47A','#1B8C5C','#E1F5EA','#CFEEDD','31,147,97','#2BB47A','#4CC9A0'],    d:['#5BD08F','#6FDDA0','#46C487','#153A2B','#1B4A38','70,196,135','#6FDDA0','#6FD6D0']},
+  rose:   {l:['#D9466F','#EC6A92','#D23F6A','#FCE9EF','#F9D9E4','217,70,111','#EC6A92','#F5A04A'],  d:['#FF8FB0','#FFA0BE','#FF7DA3','#3A2030','#4A2A3E','255,125,163','#FFA0BE','#FFB872']}
+};
 var I18N = {
   en: {settings:'Settings', language:'Language', font:'Font', fontTorah:'Torah style', fontRegular:'Regular', textSize:'Text size', theme:'Theme', auto:'Auto', light:'Light', dark:'Dark',
     wake:'Keep screen on', wakeSub:'Stops the screen dimming while you read', access:'Access', enterCode:'Enter unlock code', unlockCode:'Unlock code', unlockBtn:'Unlock',
     noCode:'No code yet? Ask whoever gave you this app.', tryAgain:'Try again', reset:'Reset progress', tapAgain:'Tap again to confirm', tapAgainN:'Tap again to clear {n}',
     coming:'Coming Shabbat: {n}', and:' and ', locked:'Locked', loading:'Loading {n}…', aboutFont:'The Regular Hebrew font is Noto Serif Hebrew (SIL Open Font License).',
-    israel:'Israel', diaspora:'Diaspora', whereAria:'Which Shabbat calendar to follow',
+    color:'Color', cBlue:'Blue', cPurple:'Purple', cGreen:'Green', cRose:'Rose', israel:'Israel', diaspora:'Diaspora', whereAria:'Which Shabbat calendar to follow',
     kqLabel:'Show words as written', kqSub:'Words written one way and read another. Plain mode always shows the written form.', kqWritten:'כפי שנכתב', kqRead:'כפי שנקרא', kqAria:'This verse has a word that is written one way and read another. Tap to switch between the two.',
     typeCode:'Type the code you were given.', badCode:'That code isn’t valid. Check it for typing mistakes and try again.', selApply:'Apply', selCancel:'Cancel', selAria:'Select several to mark done'},
   he: {settings:'הגדרות', language:'שפה', font:'גופן', fontTorah:'כתב ס״ת', fontRegular:'רגיל', textSize:'גודל הטקסט', theme:'מראה', auto:'אוטומטי', light:'בהיר', dark:'כהה',
     wake:'השאר את המסך דלוק', wakeSub:'מונע מהמסך לכבות בזמן הקריאה', access:'גישה', enterCode:'הזנת קוד', unlockCode:'קוד פתיחה', unlockBtn:'פתיחה',
     noCode:'אין קוד עדיין? פנו למי שנתן לכם את האפליקציה.', tryAgain:'נסו שוב', reset:'איפוס התקדמות', tapAgain:'לחצו שוב לאישור', tapAgainN:'לחצו שוב כדי למחוק {n}',
     coming:'שבת הקרובה: {n}', and:' · ', locked:'נעול', loading:'טוען {n}…', aboutFont:'גופן העברית הרגיל הוא Noto Serif Hebrew (רישיון SIL Open Font).',
-    israel:'ישראל', diaspora:'חו״ל', whereAria:'לפי איזה לוח שבתות',
+    color:'צבע', cBlue:'כחול', cPurple:'סגול', cGreen:'ירוק', cRose:'ורוד', israel:'ישראל', diaspora:'חו״ל', whereAria:'לפי איזה לוח שבתות',
     kqLabel:'הצג מילים כפי שנכתבו', kqSub:'מילים שנכתבות אחרת ממה שנקראות. במצב חלק מוצג תמיד הכתוב.', kqWritten:'כפי שנכתב', kqRead:'כפי שנקרא', kqAria:'בפסוק יש מילה שנכתבת אחרת ממה שנקראת. הקישו כדי לעבור בין שתי הצורות.',
     typeCode:'הקלידו את הקוד שקיבלתם.', badCode:'הקוד אינו תקין. בדקו שגיאות הקלדה ונסו שוב.', selApply:'אישור', selCancel:'ביטול', selAria:'בחירת כמה פרקים לסימון'}
 };
@@ -691,6 +713,7 @@ function readSettings(s){
   if (typeof s.wake === 'boolean') settings.wake = s.wake;
   if (s.lang === 'en' || s.lang === 'he') settings.lang = s.lang;
   if (typeof s.kq === 'boolean') settings.kq = s.kq;
+  if (ACCENTS[s.accent]) settings.accent = s.accent;
   if (s.where === 'il' || s.where === 'dia') settings.where = s.where;
 }
 function load(){
@@ -1177,8 +1200,17 @@ function refreshPicker(){
 }
 
 /* ---------- settings ---------- */
+function applyAccent(){
+  var dark = settings.theme === 'dark' || (settings.theme === 'auto' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+  var a = (ACCENTS[settings.accent] || ACCENTS.blue)[dark ? 'd' : 'l'], s = document.documentElement.style;
+  s.setProperty('--accent', a[0]); s.setProperty('--grad', 'linear-gradient(135deg,' + a[1] + ' 0%,' + a[2] + ' 100%)');
+  s.setProperty('--accent-soft', a[3]); s.setProperty('--tonal', a[4]); s.setProperty('--accent-rgb', a[5]);
+  s.setProperty('--glow', '0 10px 24px -8px rgba(' + a[5] + ',' + (dark ? '.45' : '.55') + ')');
+  s.setProperty('--ring-a', a[6]); s.setProperty('--ring-b', a[7]);
+}
+if (window.matchMedia) try{ window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(){ applyAccent(); }); }catch(e){}
 function applySettings(){
-  var r = document.documentElement;
+  var r = document.documentElement; applyAccent();
   r.style.setProperty('--vsize', settings.size + 'px');
   r.setAttribute('data-font', settings.font); r.setAttribute('data-ui', lang()); r.lang = lang();
   if (settings.theme === 'auto') r.removeAttribute('data-theme'); else r.setAttribute('data-theme', settings.theme);
@@ -1186,6 +1218,7 @@ function applySettings(){
     var key = seg.dataset.key;
     seg.querySelectorAll('button').forEach(function(b){ b.setAttribute('aria-pressed', String(b.dataset.v === settings[key])); });
   });
+  document.querySelectorAll('#swatches button').forEach(function(b){ b.setAttribute('aria-pressed', String(b.dataset.v === settings.accent)); });
   $('#size').value = settings.size;
   $('#wake').setAttribute('aria-checked', String(settings.wake));
   $('#kqRow').hidden = !CFG.kq; $('#kqSwitch').setAttribute('aria-checked', String(!!settings.kq));
@@ -1244,6 +1277,7 @@ function bind(){
   });
   $('#size').addEventListener('input', function(e){ settings.size = parseInt(e.target.value, 10); save(); applySettings(); });
   $('#selToggle').addEventListener('click', function(){ setSelecting(!selecting); });
+  $('#swatches').addEventListener('click', function(e){ var b = e.target.closest('button'); if (!b) return; settings.accent = b.dataset.v; save(); applySettings(); });
   $('#selCancel').addEventListener('click', function(){ setSelecting(false); });
   $('#selApply').addEventListener('click', applyPend);
   $('#wake').addEventListener('click', function(){ settings.wake = !settings.wake; save(); applySettings(); });
@@ -1297,6 +1331,7 @@ var RESET_LABEL = 'Reset progress';   /* replaced by the language-specific label
 function applyText(){
   document.title = CFG.name;
   document.querySelectorAll('[data-i]').forEach(function(e){ e.textContent = I(e.dataset.i); });
+  document.querySelectorAll('[data-ta-i]').forEach(function(e){ e.setAttribute('aria-label', I(e.dataset.taI)); });
   RESET_LABEL = I('reset');
   $('#reset').textContent = RESET_LABEL;
   $('#fontRow').hidden = FONTS.length < 2;
