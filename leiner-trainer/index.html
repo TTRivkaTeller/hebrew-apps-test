@@ -252,8 +252,11 @@ header{display:flex;align-items:center;justify-content:space-between;gap:8px;pad
 .sheet .btn:not(.solid):not(.danger){background:var(--bg)}
 .sheet-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
 .sheet-head h2{margin:0;font-size:20px;font-weight:700}
-.sheet-body{overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;padding:2px}
-#picker .sheet-body{padding:8px 10px 6px}
+.sheet-body{overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;padding:2px 12px}
+.sheet-body,#stage{scrollbar-width:thin;scrollbar-color:var(--line) transparent}   /* a slim scrollbar everywhere, kept clear of the content by the sheet's side padding */
+.sheet-body::-webkit-scrollbar,#stage::-webkit-scrollbar{width:6px}
+.sheet-body::-webkit-scrollbar-thumb,#stage::-webkit-scrollbar-thumb{background:var(--line);border-radius:3px}
+#picker .sheet-body{padding:8px 12px 6px}
 .head-actions{display:flex;align-items:center;gap:8px;margin-inline-start:auto}
 .sheet-head .sheet-sub{margin:0}
 .week-row{display:flex;gap:8px;align-items:stretch;margin:0 0 8px;flex:none}
@@ -619,7 +622,7 @@ var I18N = {
     coming:'Coming Shabbat: {n}', and:' and ', locked:'Locked', loading:'Loading {n}…', aboutFont:'The Regular Hebrew font is Noto Serif Hebrew (SIL Open Font License).',
     recsTitle:'Recordings', recsAria:'My recordings', recEmpty:'No recordings yet. Tap the microphone on the reading screen to record yourself.', recStartAria:'Record yourself reading', recStopAria:'Stop recording',
     recPauseAria:'Pause playback', recPlayAria:'Play', recShare:'Share', recDelete:'Delete', recDeleteSure:'Tap again to delete', recSaved:'Recording saved', recSavedAuto:'Recording saved. You moved to another parsha.',
-    recLimit:'Recording saved. It reached the 30 minute limit.', recDownloaded:'Saved to your downloads. Attach the file in WhatsApp or email.', recDeleteQ:'Delete this recording?', recCancel:'Cancel', recDeleted:'Recording deleted', recInterrupted:'The microphone was interrupted. Your recording so far was saved.',
+    recLimit:'Recording saved. It reached the 30 minute limit.', recDeleteQ:'Delete this recording?', recCancel:'Cancel', recDeleted:'Recording deleted', recInterrupted:'The microphone was interrupted. Your recording so far was saved.',
     recErrDenied:'Microphone access is blocked. Allow it in your browser settings and try again.', recErrInsecure:'Recording needs a secure (https) page.',
     recErrNone:'This device or browser cannot record audio.', recErrPlay:'This recording could not be played.', recErrSave:'The recording could not be saved.', recCount:'{n} recordings',
     color:'Color', cBlue:'Blue', cPurple:'Purple', cGreen:'Green', cRose:'Rose', israel:'Israel', diaspora:'Diaspora', whereAria:'Which Shabbat calendar to follow',
@@ -631,7 +634,7 @@ var I18N = {
     coming:'שבת הקרובה: {n}', and:' · ', locked:'נעול', loading:'טוען {n}…', aboutFont:'גופן העברית הרגיל הוא Noto Serif Hebrew ברישיון SIL Open Font License.',
     recsTitle:'הקלטות', recsAria:'ההקלטות שלי', recEmpty:'אין עדיין הקלטות. לחצו על המיקרופון במסך הקריאה כדי להקליט את עצמכם.', recStartAria:'הקלטת הקריאה שלי', recStopAria:'עצירת ההקלטה',
     recPauseAria:'השהיית ההשמעה', recPlayAria:'השמעה', recShare:'שיתוף', recDelete:'מחיקה', recDeleteSure:'לחצו שוב למחיקה', recSaved:'ההקלטה נשמרה', recSavedAuto:'ההקלטה נשמרה. עברתם לפרשה אחרת.',
-    recLimit:'ההקלטה נשמרה. היא הגיעה למגבלה של 30 דקות.', recDownloaded:'נשמר בהורדות. צרפו את הקובץ ב-WhatsApp או באימייל.', recDeleteQ:'למחוק את ההקלטה?', recCancel:'ביטול', recDeleted:'ההקלטה נמחקה', recInterrupted:'המיקרופון נקטע. ההקלטה עד כה נשמרה.',
+    recLimit:'ההקלטה נשמרה. היא הגיעה למגבלה של 30 דקות.', recDeleteQ:'למחוק את ההקלטה?', recCancel:'ביטול', recDeleted:'ההקלטה נמחקה', recInterrupted:'המיקרופון נקטע. ההקלטה עד כה נשמרה.',
     recErrDenied:'הגישה למיקרופון חסומה. אפשרו אותה בהגדרות הדפדפן ונסו שוב.', recErrInsecure:'הקלטה דורשת דף מאובטח (https).',
     recErrNone:'המכשיר או הדפדפן אינם יכולים להקליט.', recErrPlay:'לא ניתן היה להשמיע את ההקלטה.', recErrSave:'לא ניתן היה לשמור את ההקלטה.', recCount:'{n} הקלטות',
     color:'צבע', cBlue:'כחול', cPurple:'סגול', cGreen:'ירוק', cRose:'ורוד', israel:'ישראל', diaspora:'חו״ל', whereAria:'לפי איזה לוח שבתות',
@@ -1080,18 +1083,22 @@ function stopPlayback(){
 function shareRec(r){
   var d = new Date(r.created), z = function(n){ return String(n).padStart(2, '0'); };
   var name = r.slug + '-' + r.fromCh + '.' + r.fromV + (r.fromCh === r.toCh && r.fromV === r.toV ? '' : '-' + r.toCh + '.' + r.toV) + '-' + d.getFullYear() + z(d.getMonth() + 1) + z(d.getDate()) + '-' + z(d.getHours()) + z(d.getMinutes()) + '.' + extOf(r.mime);
-  var type = String(r.mime || 'audio/webm').split(';')[0], file = null;      /* browsers only accept a plain type for sharing files ('audio/mp4', not 'audio/mp4;codecs=...') */
-  try{ file = new File([r.blob], name, {type:type}); }catch(e){}
-  if (file && navigator.share && navigator.canShare && navigator.canShare({files:[file]})){
-    navigator.share({files:[file], title:r.name}).catch(function(err){ if (!err || err.name !== 'AbortError') downloadRec(r, name, type); });
+  var base = String(r.mime || 'audio/webm').split(';')[0];      /* browsers only accept a plain type for sharing files, and each keeps its own short list: try the usual names for the format */
+  var types = base === 'audio/mp4' ? ['audio/mp4', 'audio/x-m4a', 'audio/m4a', 'audio/aac'] : [base], file = null;
+  if (navigator.share && navigator.canShare){
+    for (var i = 0; i < types.length && !file; i++){
+      try{ var f = new File([r.blob], name, {type:types[i]}); if (navigator.canShare({files:[f]})) file = f; }catch(e){}
+    }
+  }
+  if (file){
+    navigator.share({files:[file], title:r.name}).catch(function(err){ if (!err || err.name !== 'AbortError') downloadRec(r, name, base); });
     return;
   }
-  downloadRec(r, name, type);
+  downloadRec(r, name, base);
 }
 function downloadRec(r, name, type){      /* no share sheet (most desktop browsers): save the file and say so */
   var a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([r.blob], {type:type})); a.download = name; document.body.appendChild(a); a.click(); a.parentNode.removeChild(a);
   setTimeout(function(){ try{ URL.revokeObjectURL(a.href); }catch(e){} }, 4000);
-  note(I('recDownloaded'));
 }
 function renderRecs(){
   recAll().then(function(list){
