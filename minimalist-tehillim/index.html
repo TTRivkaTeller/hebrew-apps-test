@@ -615,7 +615,7 @@ input[type=range]{width:100%;height:32px;accent-color:var(--accent);margin:0}
       <button class="btn" id="licBtn" data-i="enterCode"></button>
     </div>
     <p class="about" id="about"></p>
-    <p class="about build" id="buildTxt">Build 2026-11-26 16:54 UTC</p>
+    <p class="about build" id="buildTxt">Build 2026-11-26 17:10 UTC</p>
   </div>
 </section>
 
@@ -1580,6 +1580,11 @@ function bind(){
   function flipKq(e){ kqFlip = !kqFlip; var kb = e && e.type === 'keydown'; render(false); if (kb){ var f = document.querySelector('#verse .kq'); if (f) f.focus({preventScroll:true}); } }
   $('#verse').addEventListener('click', function(e){ if (e.target.closest && e.target.closest('.kq')) flipKq(e); });
   $('#stage').addEventListener('scroll', moreHint, {passive:true}); window.addEventListener('resize', moreHint);
+  /* re-check whenever the passuk or its box changes size (the verse font finishing loading, a new passuk laid out, a rotation):
+     ResizeObserver reports after layout and before paint, so the fade is already in place on the first frame shown */
+  if (window.ResizeObserver){ var ro = new ResizeObserver(function(){ moreHint(); }); ro.observe($('#verse')); ro.observe($('#stage')); }
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(moreHint);
+  if (document.fonts && document.fonts.addEventListener) document.fonts.addEventListener('loadingdone', moreHint);
   $('#moreHint').addEventListener('click', function(){ var st = $('#stage'); st.scrollBy({top: st.clientHeight * 0.7, behavior: 'smooth'}); });
   $('#verse').addEventListener('keydown', function(e){ if ((e.key === 'Enter' || e.key === ' ') && e.target.classList && e.target.classList.contains('kq')){ e.preventDefault(); e.stopPropagation(); flipKq(e); } });
   $('#kqSwitch').addEventListener('click', function(){ settings.kq = !settings.kq; save(); applySettings(); render(false); });
