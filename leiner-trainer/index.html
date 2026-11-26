@@ -209,7 +209,9 @@ header{display:flex;align-items:center;justify-content:space-between;gap:8px;pad
 .recplay svg{width:22px;height:22px}
 .recplay:active,.recact:active{transform:scale(.93)}
 .rectxt{flex:1;min-width:0}
-.rect1{font-weight:600;font-size:16px;line-height:1.35;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rect1{font-weight:600;font-size:16px;line-height:1.35}
+.rect1 bdi{display:block}
+.rect1 bdi:nth-child(2){font-size:14px;font-weight:500;color:var(--ink)}
 .rect2{font-size:13px;color:var(--muted);margin-top:2px;direction:ltr;text-align:right}
 .recact{flex:none;width:44px;height:44px;border:0;border-radius:12px;background:transparent;color:var(--muted);display:grid;place-items:center}
 .recact svg{width:20px;height:20px}
@@ -609,7 +611,7 @@ input[type=range]{width:100%;height:32px;accent-color:var(--accent);margin:0}
       <button class="btn" id="licBtn" data-i="enterCode"></button>
     </div>
     <p class="about" id="about"></p>
-    <p class="about build" id="buildTxt">Build 2026-11-26 10:27 UTC</p>
+    <p class="about build" id="buildTxt">Build 2026-11-26 10:39 UTC</p>
   </div>
 </section>
 
@@ -645,7 +647,7 @@ var I18N = {
     noCode:'No code yet? Ask whoever gave you this app.', tryAgain:'Try again', reset:'Reset progress', tapAgain:'Tap again to confirm', tapAgainN:'Tap again to clear {n}',
     coming:'Coming Shabbat: {n}', and:' and ', locked:'Locked', loading:'Loading {n}…', aboutFont:'The Regular Hebrew font is Noto Serif Hebrew (SIL Open Font License).',
     recsTitle:'Recordings', recsAria:'My recordings', recEmpty:'No recordings yet. Tap the microphone on the reading screen to record yourself.', recStartAria:'Record yourself reading', recStopAria:'Stop recording',
-    recPauseAria:'Pause playback', recPlayAria:'Play', recShare:'Share', recDelete:'Delete', recDeleteSure:'Tap again to delete', recSaved:'Recording saved', recSavedAuto:'Recording saved. You moved to another parsha.',
+    recPauseAria:'Pause playback', recPlayAria:'Play', recDownload:'Download', recDelete:'Delete', recDeleteSure:'Tap again to delete', recSaved:'Recording saved', recSavedAuto:'Recording saved. You moved to another parsha.',
     recLimit:'Recording saved. It reached the 30 minute limit.', recDeleteQ:'Delete this recording?', recCancel:'Cancel', recDeleted:'Recording deleted', recInterrupted:'The microphone was interrupted. Your recording so far was saved.',
     recErrDenied:'Microphone access is blocked. Allow it in your browser settings and try again.', recErrInsecure:'Recording needs a secure (https) page.',
     recErrNone:'This device or browser cannot record audio.', recErrPlay:'This recording could not be played.', recErrSave:'The recording could not be saved.', recCount:'{n} recordings',
@@ -657,7 +659,7 @@ var I18N = {
     noCode:'אין קוד עדיין? פנו למי שנתן לכם את האפליקציה.', tryAgain:'נסו שוב', reset:'איפוס התקדמות', tapAgain:'לחצו שוב לאישור', tapAgainN:'לחצו שוב כדי למחוק {n}',
     coming:'שבת הקרובה: {n}', and:' · ', locked:'נעול', loading:'טוען {n}…', aboutFont:'The Regular Hebrew font is Noto Serif Hebrew (SIL Open Font License).',
     recsTitle:'הקלטות', recsAria:'ההקלטות שלי', recEmpty:'אין עדיין הקלטות. לחצו על המיקרופון במסך הקריאה כדי להקליט את עצמכם.', recStartAria:'הקלטת הקריאה שלי', recStopAria:'עצירת ההקלטה',
-    recPauseAria:'השהיית ההשמעה', recPlayAria:'השמעה', recShare:'שיתוף', recDelete:'מחיקה', recDeleteSure:'לחצו שוב למחיקה', recSaved:'ההקלטה נשמרה', recSavedAuto:'ההקלטה נשמרה. עברתם לפרשה אחרת.',
+    recPauseAria:'השהיית ההשמעה', recPlayAria:'השמעה', recDownload:'הורדה', recDelete:'מחיקה', recDeleteSure:'לחצו שוב למחיקה', recSaved:'ההקלטה נשמרה', recSavedAuto:'ההקלטה נשמרה. עברתם לפרשה אחרת.',
     recLimit:'ההקלטה נשמרה. היא הגיעה למגבלה של 30 דקות.', recDeleteQ:'למחוק את ההקלטה?', recCancel:'ביטול', recDeleted:'ההקלטה נמחקה', recInterrupted:'המיקרופון נקטע. ההקלטה עד כה נשמרה.',
     recErrDenied:'הגישה למיקרופון חסומה. אפשרו אותה בהגדרות הדפדפן ונסו שוב.', recErrInsecure:'הקלטה דורשת דף מאובטח (https).',
     recErrNone:'המכשיר או הדפדפן אינם יכולים להקליט.', recErrPlay:'לא ניתן היה להשמיע את ההקלטה.', recErrSave:'לא ניתן היה לשמור את ההקלטה.', recCount:'{n} הקלטות',
@@ -975,7 +977,7 @@ var ICON = {
   stop: '<rect x="7" y="7" width="10" height="10" rx="2" fill="currentColor"/>',
   play: '<path d="M8 5v14l11-7z" fill="currentColor"/>',
   pause: '<rect x="7" y="5" width="3.5" height="14" rx="1" fill="currentColor"/><rect x="13.5" y="5" width="3.5" height="14" rx="1" fill="currentColor"/>',
-  share: '<path d="M12 15V4"/><path d="m7.5 8.5 4.5-4.5 4.5 4.5"/><path d="M5 13v6a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-6"/>',
+  download: '<path d="M12 4v11"/><path d="m7.5 11 4.5 4.5 4.5-4.5"/><path d="M5 19.5h14"/>',
   trash: '<path d="M4 7h16"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M6 7l1 12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1l1-12"/><path d="M9 7V4h6v3"/>'
 };
 function note(msg){ toast('rec', msg, true); }
@@ -1104,23 +1106,10 @@ function stopPlayback(){
   try{ pl.audio.pause(); }catch(e){} try{ URL.revokeObjectURL(pl.url); }catch(e){}
   updateRecUI();
 }
-function shareRec(r){
+function downloadRec(r){      /* save the recording as a file (no share sheet, no apps) */
   var d = new Date(r.created), z = function(n){ return String(n).padStart(2, '0'); };
   var name = r.slug + '-' + r.fromCh + '.' + r.fromV + (r.fromCh === r.toCh && r.fromV === r.toV ? '' : '-' + r.toCh + '.' + r.toV) + '-' + d.getFullYear() + z(d.getMonth() + 1) + z(d.getDate()) + '-' + z(d.getHours()) + z(d.getMinutes()) + '.' + extOf(r.mime);
-  var base = String(r.mime || 'audio/webm').split(';')[0];      /* browsers only accept a plain type for sharing files, and each keeps its own short list: try the usual names for the format */
-  var types = base === 'audio/mp4' ? ['audio/mp4', 'audio/x-m4a', 'audio/m4a', 'audio/aac'] : [base], file = null;
-  if (navigator.share && navigator.canShare){
-    for (var i = 0; i < types.length && !file; i++){
-      try{ var f = new File([r.blob], name, {type:types[i]}); if (navigator.canShare({files:[f]})) file = f; }catch(e){}
-    }
-  }
-  if (file){
-    navigator.share({files:[file], title:r.name}).catch(function(err){ if (!err || err.name !== 'AbortError') downloadRec(r, name, base); });
-    return;
-  }
-  downloadRec(r, name, base);
-}
-function downloadRec(r, name, type){      /* no share sheet (most desktop browsers): save the file and say so */
+  var type = String(r.mime || 'audio/webm').split(';')[0];
   var a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([r.blob], {type:type})); a.download = name; document.body.appendChild(a); a.click(); a.parentNode.removeChild(a);
   setTimeout(function(){ try{ URL.revokeObjectURL(a.href); }catch(e){} }, 4000);
 }
@@ -1133,10 +1122,10 @@ function renderRecs(){
       var pb = el('button', 'recplay'); pb.dataset.act = 'play'; pb.setAttribute('aria-label', I('recPlayAria')); pb.appendChild(iconSvg(ICON.play));
       var tx2 = el('div', 'rectxt'), l1 = el('div', 'rect1'), nmb = document.createElement('bdi'); nmb.lang = 'he'; nmb.dir = 'rtl'; nmb.textContent = r.name;
       var rb = document.createElement('bdi'); rb.lang = 'he'; rb.dir = 'rtl'; rb.textContent = recRef(r);
-      l1.appendChild(nmb); l1.appendChild(document.createTextNode(' · ')); l1.appendChild(rb);
+      l1.appendChild(nmb); l1.appendChild(rb);
       var l2 = el('div', 'rect2', new Date(r.created).toLocaleString(loc, {day:'numeric', month:'short', hour:'2-digit', minute:'2-digit'}) + ' · ' + fmtDur(r.dur));
       tx2.appendChild(l1); tx2.appendChild(l2);
-      var sb = el('button', 'recact'); sb.dataset.act = 'share'; sb.setAttribute('aria-label', I('recShare')); sb.appendChild(iconSvg(ICON.share));
+      var sb = el('button', 'recact'); sb.dataset.act = 'download'; sb.setAttribute('aria-label', I('recDownload')); sb.appendChild(iconSvg(ICON.download));
       var db = el('button', 'recact'); db.dataset.act = 'del'; db.setAttribute('aria-label', I('recDelete')); db.appendChild(iconSvg(ICON.trash));
       var cf = el('div', 'recconfirm'); cf.appendChild(el('span', 'recq', I('recDeleteQ')));
       var no = el('button', null, I('recCancel')); no.dataset.act = 'no'; var yes = el('button', 'recyes', I('recDelete')); yes.dataset.act = 'yes'; cf.appendChild(no); cf.appendChild(yes);
@@ -1155,7 +1144,7 @@ function bindRec(){
   $('#recList').addEventListener('click', function(e){
     var b = e.target.closest('button'); if (!b) return; var row = b.closest('.rec'), r = row && row._rec; if (!r) return;
     if (b.dataset.act === 'play') playRec(r);
-    else if (b.dataset.act === 'share') shareRec(r);
+    else if (b.dataset.act === 'download') downloadRec(r);
     else if (b.dataset.act === 'del'){
       row.classList.add('confirm'); clearTimeout(row._ct); row._ct = setTimeout(function(){ row.classList.remove('confirm'); }, 6000);
       var yb = row.querySelector('.recyes'); if (yb) yb.focus({preventScroll:true});
