@@ -1,6 +1,6 @@
 /* rytdocs app: caches the app so it opens offline. Bump VERSION when you upload a new index.html. */
-var VERSION = 'rytdocs-minimalist-tehillim-4';
-var FILES = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png'];
+var VERSION = 'rytdocs-minimalist-tehillim-5';
+var FILES = ['./', './index.html', './manifest.webmanifest', './icon-192.png?v=5', './icon-512.png?v=5'];
 self.addEventListener('install', function(e){ e.waitUntil(caches.open(VERSION).then(function(c){ return c.addAll(FILES); }).then(function(){ return self.skipWaiting(); })); });
 self.addEventListener('activate', function(e){ e.waitUntil(caches.keys().then(function(ks){ return Promise.all(ks.filter(function(k){ return k !== VERSION; }).map(function(k){ return caches.delete(k); })); }).then(function(){ return self.clients.claim(); })); });
 self.addEventListener('fetch', function(e){
