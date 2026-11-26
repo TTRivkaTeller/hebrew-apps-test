@@ -611,7 +611,7 @@ input[type=range]{width:100%;height:32px;accent-color:var(--accent);margin:0}
       <button class="btn" id="licBtn" data-i="enterCode"></button>
     </div>
     <p class="about" id="about"></p>
-    <p class="about build" id="buildTxt">Build 2026-11-26 11:19 UTC</p>
+    <p class="about build" id="buildTxt">Build 2026-11-26 11:29 UTC</p>
   </div>
 </section>
 
@@ -1028,6 +1028,7 @@ function updateRecUI(){
 }
 var recStarting = false;
 async function startRec(){
+  if (!CFG.rec) return;      /* recording-free build (LEINER_REC=0): never touches the microphone */
   if (rec || recStarting || state.finished || !cache[state.slug]) return;
   if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || typeof MediaRecorder === 'undefined'){ note(window.isSecureContext === false ? I('recErrInsecure') : I('recErrNone')); return; }
   var stream; recStarting = true;     /* a second tap while the permission prompt is open must not start a second take */
