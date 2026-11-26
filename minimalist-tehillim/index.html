@@ -167,6 +167,10 @@ header{display:flex;align-items:center;justify-content:space-between;gap:8px;pad
 /* stage: the verse sits in its own white card */
 .stage-wrap{flex:1;min-height:0;display:flex;position:relative;overflow:hidden;background:var(--surface);border-radius:var(--r-lg)}
 #stage{flex:1;min-height:0;overflow-y:auto;display:flex;flex-direction:column;padding:20px 16px;overscroll-behavior:contain}
+.more-hint{position:absolute;left:0;right:0;bottom:0;height:76px;border:0;padding:0 0 10px;border-radius:0 0 var(--r-lg) var(--r-lg);background:linear-gradient(to bottom,transparent,var(--surface) 62%);color:var(--accent);display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s;cursor:pointer}
+.more-hint span{width:36px;height:36px;border-radius:50%;background:var(--accent-soft);display:flex;align-items:center;justify-content:center}   /* there is more of the passuk below: shown until the reader has scrolled to the end */
+.more-hint.on{opacity:1;pointer-events:auto}
+.more-hint svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
 .verse{
   margin:auto;max-width:100%;text-align:center;direction:rtl;
   font-family:var(--vfont);font-size:var(--vsize);font-weight:400;line-height:2;
@@ -455,6 +459,7 @@ input[type=range]{width:100%;height:32px;accent-color:var(--accent);margin:0}
   <section class="reader" id="reader">
   <button class="back" id="back" data-ta="prevAria"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5"/><path d="m5 12 7-7 7 7"/></svg></button>
   <div class="stage-wrap" id="stageWrap">
+  <button class="more-hint" id="moreHint" tabindex="-1" aria-hidden="true"><span><svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></span></button>
   <main id="stage">
     <p class="verse" id="verse" lang="he" dir="rtl"></p>
     <div class="status" id="status" hidden>
@@ -610,7 +615,7 @@ input[type=range]{width:100%;height:32px;accent-color:var(--accent);margin:0}
       <button class="btn" id="licBtn" data-i="enterCode"></button>
     </div>
     <p class="about" id="about"></p>
-    <p class="about build" id="buildTxt">Build 2026-11-26 16:03 UTC</p>
+    <p class="about build" id="buildTxt">Build 2026-11-26 16:31 UTC</p>
   </div>
 </section>
 
@@ -763,7 +768,8 @@ function buildVerse(pv){     /* verse text with its written/read words marked; r
     var i = raw.indexOf(pr[0], cur); if (i < 0) return;
     if (i > cur) frag.appendChild(document.createTextNode(fmtSeg(raw.slice(cur, i))));
     var sp = document.createElement('span'); sp.className = 'kq'; sp.tabIndex = 0; sp.setAttribute('role', 'button');
-    sp.textContent = wr ? pr[1] : (settings.mode === 'plain' ? pr[0].replace(TAAMIM, '').replace(PASEQ, '') : fmtSeg(pr[0]));   /* read form keeps its nikud even in Plain mode: that is what the tap is for */
+    var rd = pr[2] || pr[0];   /* pr[2]: the read form when it differs from the text itself (perpetual qere: הִוא read הִיא) */
+    sp.textContent = wr ? pr[1] : (settings.mode === 'plain' ? rd.replace(TAAMIM, '').replace(PASEQ, '') : fmtSeg(rd));   /* read form keeps its nikud even in Plain mode: that is what the tap is for */
     sp.dataset.lbl = I(wr ? 'kqWritten' : 'kqRead'); sp.setAttribute('aria-label', sp.textContent + ', ' + sp.dataset.lbl + '. ' + I('kqAria'));
     frag.appendChild(sp); cur = i + pr[0].length; any = true;
   });
@@ -1381,6 +1387,11 @@ function render(animate){
     if (ri < rec.lo) rec.lo = ri; if (ri > rec.hi) rec.hi = ri;
   }
   var kqLbl = I(kqWritten() ? 'kqWritten' : 'kqRead'); v.querySelectorAll('.kq').forEach(function(sp){ sp.dataset.lbl = kqLbl; });   /* the label also follows a language change */
+  moreHint();
+}
+function moreHint(){     /* the small arrow at the foot of the verse box: on while part of the passuk is still below, off once scrolled to the end */
+  var st = $('#stage'), h = $('#moreHint'); if (!st || !h) return;
+  h.classList.toggle('on', !$('#verse').hidden && st.scrollHeight - st.clientHeight - st.scrollTop > 6);
 }
 
 /* ---------- picker ---------- */
@@ -1493,7 +1504,7 @@ function applyAccent(){
 if (window.matchMedia) try{ window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(){ applyAccent(); }); }catch(e){}
 function applySettings(){
   var r = document.documentElement; applyAccent();
-  r.style.setProperty('--vsize', settings.size + 'px');
+  r.style.setProperty('--vsize', settings.size + 'px'); setTimeout(moreHint, 0);
   r.setAttribute('data-font', settings.font); r.setAttribute('data-ui', lang()); r.lang = lang();
   if (settings.theme === 'auto') r.removeAttribute('data-theme'); else r.setAttribute('data-theme', settings.theme);
   document.querySelectorAll('.seg').forEach(function(seg){
@@ -1566,6 +1577,8 @@ function bind(){
   $('#wake').addEventListener('click', function(){ settings.wake = !settings.wake; save(); applySettings(); });
   function flipKq(e){ kqFlip = !kqFlip; var kb = e && e.type === 'keydown'; render(false); if (kb){ var f = document.querySelector('#verse .kq'); if (f) f.focus({preventScroll:true}); } }
   $('#verse').addEventListener('click', function(e){ if (e.target.closest && e.target.closest('.kq')) flipKq(e); });
+  $('#stage').addEventListener('scroll', moreHint, {passive:true}); window.addEventListener('resize', moreHint);
+  $('#moreHint').addEventListener('click', function(){ var st = $('#stage'); st.scrollBy({top: st.clientHeight * 0.7, behavior: 'smooth'}); });
   $('#verse').addEventListener('keydown', function(e){ if ((e.key === 'Enter' || e.key === ' ') && e.target.classList && e.target.classList.contains('kq')){ e.preventDefault(); e.stopPropagation(); flipKq(e); } });
   $('#kqSwitch').addEventListener('click', function(){ settings.kq = !settings.kq; save(); applySettings(); render(false); });
 
