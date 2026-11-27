@@ -312,9 +312,11 @@ header{display:flex;align-items:center;justify-content:space-between;gap:8px;pad
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .msg.err{color:#F2A8A2}}
 .lic .btn{margin-top:10px}
 /* subscription screen (store build only): covers the app until there is an active subscription or trial */
-.paywall{position:fixed;inset:0;z-index:60;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px 24px calc(28px + env(safe-area-inset-bottom));overflow-y:auto}
+.paywall{position:fixed;inset:0;z-index:60;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:calc(98px + env(safe-area-inset-top,0px)) 24px calc(28px + env(safe-area-inset-bottom));overflow-y:auto}
+.pw-lang{position:absolute;top:calc(16px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);width:176px;box-shadow:var(--shadow)}
+.pw-lang button{min-height:36px;font-size:14px}
 .paywall[hidden]{display:none}
-.pw-card{width:100%;max-width:420px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:14px}
+.pw-card{width:100%;max-width:420px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:12px}
 .pw-icon{width:88px;height:88px;border-radius:22px;box-shadow:var(--shadow)}
 .pw-card h2{margin:4px 0 0;font-size:26px;font-weight:700;color:var(--ink)}
 .pw-points{list-style:none;margin:6px 0 4px;padding:0;display:flex;flex-direction:column;gap:10px;width:100%}
@@ -572,6 +574,7 @@ input[type=range]{width:100%;height:32px;accent-color:var(--accent);margin:0}
 </section>
 
 <section class="paywall" id="paywall" role="dialog" aria-modal="true" aria-labelledby="pwTitle" hidden>
+  <div class="seg pw-lang" id="pwLang" role="group" aria-label="Language" data-key="lang"><button data-v="he" lang="he">עברית</button><button data-v="en" lang="en">English</button></div>
   <div class="pw-card">
     <img class="pw-icon" id="pwIcon" alt="">
     <h2 id="pwTitle"></h2>
@@ -662,7 +665,7 @@ input[type=range]{width:100%;height:32px;accent-color:var(--accent);margin:0}
       <button class="btn" id="licBtn" data-i="enterCode"></button>
     </div>
     <p class="about" id="about"></p>
-    <p class="about build" id="buildTxt">Build 2026-11-27 06:52 UTC</p>
+    <p class="about build" id="buildTxt">Build 2026-11-27 12:45 UTC</p>
   </div>
 </section>
 
@@ -682,7 +685,8 @@ var lastNavAt = 0, GUARD_MS = 400, liveReady = false;   /* a second press right 
 /* cfg.modes / cfg.fonts: which text modes and fonts the app offers. A single choice is fixed and its control is hidden; saved values outside the list are ignored. */
 var MODES = CFG.modes || ['full','nikud','plain'], FONTS = CFG.fonts || ['torah','print'];
 var KEY = CFG.key, OLD_KEY = CFG.legacy || '';
-var DEFAULTS = Object.assign({mode:'full', font:'torah', size:34, theme:'auto', wake:true, lang:'en', accent:'blue', kq:false, where:detectIsrael() ? 'il' : 'dia'}, CFG.defaults || {});
+function detectLang(){ try{ var l = (navigator.languages && navigator.languages[0]) || navigator.language || ''; return /^(he|iw)(-|$)/i.test(l) ? 'he' : 'en'; }catch(e){ return 'en'; } }   /* first launch only: a Hebrew phone starts in Hebrew; a saved choice always wins */
+var DEFAULTS = Object.assign({mode:'full', font:'torah', size:34, theme:'auto', wake:true, lang:detectLang(), accent:'blue', kq:false, where:detectIsrael() ? 'il' : 'dia'}, CFG.defaults || {});
 var SAMPLE = CFG.sample;
 var settings = Object.assign({}, DEFAULTS);
 var state = {slug:MAIN[0], a:0, verse:0, finished:false, main:MAIN[0]};
@@ -721,6 +725,7 @@ var I18N = {
     typeCode:'הקלידו את הקוד שקיבלתם.', badCode:'הקוד אינו תקין. בדקו שגיאות הקלדה ונסו שוב.', selApply:'אישור', selCancel:'ביטול', selAria:'בחירת כמה פרקים לסימון'}
 };
 function lang(){ return settings.lang === 'en' ? 'en' : 'he'; }
+function appName(){ return lang() === 'he' && CFG.nameHe ? CFG.nameHe : CFG.name; }   /* Leiner Trainer stays English in Hebrew */
 function I(k, v){
   var s = (I18N[lang()][k] != null) ? I18N[lang()][k] : (I18N.en[k] || '');
   if (v) for (var x in v) s = s.split('{' + x + '}').join(v[x]);
@@ -817,11 +822,16 @@ function storeCall(fn, fromUser){
     storeAnswer(r, fromUser && fn === 'restore');
   }).catch(function(){ if (fromUser) $('#pwMsg').textContent = navigator.onLine === false ? I('payOffline') : I('payFail'); });
 }
+function pwText(){     /* the subscription screen in the current UI language (also runs when the language is switched) */
+  if (!STORE) return;
+  $('#pwTitle').textContent = appName(); $('#pwStart').textContent = I('payStart'); $('#pwRestore').textContent = I('payRestore'); $('#pwFine').textContent = I('payFine');
+  var pts = $('#pwPoints'); pts.textContent = ''; (tx(null, 'payPoints') || '').split('|').filter(Boolean).forEach(function(t){ var li = document.createElement('li'); li.textContent = t; pts.appendChild(li); });
+  $('#paywall').dir = lang() === 'he' ? 'rtl' : 'ltr'; showPlans(plansCache());
+}
 function storeStart(){
   if (!STORE) return;
-  $('#pwTitle').textContent = CFG.name; $('#pwStart').textContent = I('payStart'); $('#pwRestore').textContent = I('payRestore'); $('#pwFine').textContent = I('payFine');
+  pwText();
   var ic = document.querySelector('link[rel="apple-touch-icon"]') || document.querySelector('link[rel="icon"]'); if (ic) $('#pwIcon').src = ic.href; else $('#pwIcon').hidden = true;   /* the store build puts the full app icon first */
-  var pts = $('#pwPoints'); pts.textContent = ''; (tx(null, 'payPoints') || '').split('|').filter(Boolean).forEach(function(t){ var li = document.createElement('li'); li.textContent = t; pts.appendChild(li); });
   $('#pwStart').addEventListener('click', function(){ storeCall('subscribe', true); });
   $('#pwRestore').addEventListener('click', function(){ storeCall('restore', true); });
   $('#pwPlans').addEventListener('click', function(e){ var b = e.target.closest('.pw-plan'); if (!b) return; plan = b.dataset.plan; showPlans(plansCache()); });
@@ -1752,7 +1762,7 @@ function bind(){
 
 var RESET_LABEL = 'Reset progress';   /* replaced by the language-specific label in applyText */
 function applyText(){
-  document.title = CFG.name;
+  document.title = CFG.name; if (STORE) pwText();
   document.querySelectorAll('[data-i]').forEach(function(e){ e.textContent = I(e.dataset.i); });
   document.querySelectorAll('[data-ta-i]').forEach(function(e){ e.setAttribute('aria-label', I(e.dataset.taI)); });
   RESET_LABEL = I('reset');
@@ -1770,7 +1780,7 @@ function applyText(){
   $('#resetNote').textContent = tx(null, 'resetNote');
   $('#unlockTitle').textContent = tx(null, 'unlockTitle');
   var about = $('#about'); about.textContent = '';
-  about.appendChild(el('strong', null, CFG.name + (CFG.byline ? ', ' + CFG.byline : '') + '.')); about.appendChild(document.createTextNode(' ' + CFG.about)); var af = el('span', 'about-font', I('aboutFont')); af.dir = 'ltr'; about.appendChild(af);
+  about.appendChild(el('strong', null, appName() + (CFG.byline ? ', ' + CFG.byline : '') + '.')); about.appendChild(document.createTextNode(' ' + CFG.about)); var af = el('span', 'about-font', I('aboutFont')); af.dir = 'ltr'; about.appendChild(af);
   var ft = document.querySelector('[data-key="font"] [data-v="torah"]'); if (ft) ft.textContent = tx(null, 'fontTorah');
   $('#quickBtn').textContent = '';
   if (CFG.quick){
