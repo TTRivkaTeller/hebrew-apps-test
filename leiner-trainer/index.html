@@ -168,9 +168,11 @@ header{display:flex;align-items:center;justify-content:space-between;gap:8px;pad
 /* stage: the verse sits in its own white card */
 .stage-wrap{flex:1;min-height:0;display:flex;position:relative;overflow:hidden;background:var(--surface);border-radius:var(--r-lg)}
 #stage{flex:1;min-height:0;overflow-y:auto;display:flex;flex-direction:column;padding:20px 16px;overscroll-behavior:contain}
-.more-hint{position:absolute;left:0;right:0;bottom:0;height:76px;border:0;padding:0 0 10px;border-radius:0 0 var(--r-lg) var(--r-lg);background:linear-gradient(to bottom,transparent,var(--surface) 62%);color:var(--accent);display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;cursor:pointer}   /* no transition: the fade is already there when a passuk appears, and follows the finger when scrolling */
+.more-hint{position:absolute;z-index:1;left:0;right:0;bottom:0;height:76px;border:0;padding:0 0 10px;border-radius:0 0 var(--r-lg) var(--r-lg);background:linear-gradient(to bottom,transparent,var(--surface) 62%);color:var(--accent);display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;cursor:pointer}   /* no transition: the fade is already there when a passuk appears, and follows the finger when scrolling */
 .more-hint span{width:36px;height:36px;border-radius:50%;background:var(--accent-soft);display:flex;align-items:center;justify-content:center}   /* there is more of the passuk below: shown until the reader has scrolled to the end */
 .more-hint.on{pointer-events:auto}
+.more-hint.up{top:0;bottom:auto;padding:10px 0 0;align-items:flex-start;border-radius:var(--r-lg) var(--r-lg) 0 0;background:linear-gradient(to top,transparent,var(--surface) 62%)}   /* the same arrow at the top once scrolled down: part of the passuk is above */
+.more-hint.up svg{transform:rotate(180deg)}   /* z-index: stays above the passuk while it fades in, so the text under it is faded from the first frame */
 .more-hint svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
 .verse{
   margin:auto;max-width:100%;text-align:center;direction:rtl;
@@ -484,6 +486,7 @@ input[type=range]{width:100%;height:32px;accent-color:var(--accent);margin:0}
   <button class="back" id="back" data-ta="prevAria"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5"/><path d="m5 12 7-7 7 7"/></svg></button>
   <div class="stage-wrap" id="stageWrap">
   <button class="more-hint" id="moreHint" tabindex="-1" aria-hidden="true"><span><svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></span></button>
+  <button class="more-hint up" id="lessHint" tabindex="-1" aria-hidden="true"><span><svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></span></button>
   <main id="stage">
     <p class="verse" id="verse" lang="he" dir="rtl"></p>
     <div class="status" id="status" hidden>
@@ -659,7 +662,7 @@ input[type=range]{width:100%;height:32px;accent-color:var(--accent);margin:0}
       <button class="btn" id="licBtn" data-i="enterCode"></button>
     </div>
     <p class="about" id="about"></p>
-    <p class="about build" id="buildTxt">Build 2026-11-27 06:06 UTC</p>
+    <p class="about build" id="buildTxt">Build 2026-11-27 06:21 UTC</p>
   </div>
 </section>
 
@@ -1506,6 +1509,8 @@ function moreHint(){     /* the small arrow at the foot of the verse box: on whi
   var left = $('#verse').hidden ? 0 : st.scrollHeight - st.clientHeight - st.scrollTop;
   h.classList.toggle('on', left > 6);
   h.style.opacity = left > 6 ? String(Math.min(1, (left - 6) / 70)) : '0';    /* eases out over the last bit of scrolling instead of switching off */
+  var u = $('#lessHint'), top = $('#verse').hidden ? 0 : st.scrollTop; if (!u) return;
+  u.classList.toggle('on', top > 6); u.style.opacity = top > 6 ? String(Math.min(1, (top - 6) / 70)) : '0';
 }
 
 /* ---------- picker ---------- */
@@ -1698,6 +1703,7 @@ function bind(){
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(moreHint);
   if (document.fonts && document.fonts.addEventListener) document.fonts.addEventListener('loadingdone', moreHint);
   $('#moreHint').addEventListener('click', function(){ var st = $('#stage'); st.scrollBy({top: st.clientHeight * 0.7, behavior: 'smooth'}); });
+  $('#lessHint').addEventListener('click', function(){ var st = $('#stage'); st.scrollBy({top: -st.clientHeight * 0.7, behavior: 'smooth'}); });
   $('#verse').addEventListener('keydown', function(e){ if ((e.key === 'Enter' || e.key === ' ') && e.target.classList && e.target.classList.contains('kq')){ e.preventDefault(); e.stopPropagation(); flipKq(e); } });
   $('#kqSwitch').addEventListener('click', function(){ settings.kq = !settings.kq; save(); applySettings(); render(false); });
 
