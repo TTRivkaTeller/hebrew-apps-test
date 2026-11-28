@@ -168,6 +168,28 @@ header{display:flex;align-items:center;justify-content:space-between;gap:8px;pad
 /* stage: the verse sits in its own white card */
 .stage-wrap{flex:1;min-height:0;display:flex;position:relative;overflow:hidden;background:var(--surface);border-radius:var(--r-lg)}
 #stage{flex:1;min-height:0;overflow-y:auto;display:flex;flex-direction:column;padding:20px 16px;overscroll-behavior:contain}
+/* Tehillim sets: picker views (All = the five books, Week, Month) and the line above the verse while reading a set */
+.pk-view{margin:0 4px 10px}
+.pk-view[hidden]{display:none}
+.pk-view button{min-height:38px;font-size:14.5px}
+.sg-h{display:flex;align-items:baseline;gap:8px;width:100%;margin:0;padding:16px 2px 0;border:0;background:none;font:inherit;font-size:15px;color:var(--ink);text-align:start}
+.sg-h b{font-weight:700} .sg-h span{color:var(--muted)}
+.sg-h .cnt{margin-inline-start:auto;font-size:13px;color:var(--muted);font-style:normal}
+.sg-h .cnt.set{color:var(--done);font-weight:700}
+.sg-h em{font-style:normal;background:var(--grad);color:var(--accent-ink);font-size:11.5px;font-weight:700;border-radius:999px;padding:2px 9px;align-self:center}
+.sg-h svg{width:16px;height:16px;align-self:center;flex:none;fill:none;stroke:var(--accent);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+button.sg-h{cursor:pointer}
+.sgroup.today{background:var(--accent-soft);border-radius:18px;padding:0 10px 12px;margin:12px -4px 0}
+.sgroup.today .sg-h{padding-top:12px}
+.sg-start{margin-top:10px;width:100%;min-height:46px;border-radius:14px;border:0;background:var(--grad);color:var(--accent-ink);font-weight:700;font-size:15px}
+.setchip{display:flex;align-items:center;gap:10px;min-height:46px;background:var(--surface);border-radius:var(--r-md);box-shadow:var(--shadow);padding:2px 4px 2px 14px;font-weight:600;font-size:15px;color:var(--ink)}
+.setchip[hidden]{display:none}
+.setchip .sring{width:28px;height:28px;flex:none}
+.setchip .sring circle{fill:none;stroke-width:5}
+.setchip .sring .t{stroke:var(--accent-soft)} .setchip .sring .f{stroke:var(--accent);stroke-linecap:round}
+.setchip small{margin-inline-start:auto;color:var(--muted);font-weight:500;font-size:13.5px}
+.setchip .sc-x{width:44px;height:44px;border:0;background:none;display:grid;place-items:center;color:var(--muted);padding:0}
+.setchip .sc-x svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round}
 .more-hint{position:absolute;z-index:1;left:0;right:0;bottom:0;height:76px;border:0;padding:0 0 10px;border-radius:0 0 var(--r-lg) var(--r-lg);background:linear-gradient(to bottom,transparent,var(--surface) 62%);color:var(--accent);display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;cursor:pointer}   /* no transition: the fade is already there when a passuk appears, and follows the finger when scrolling */
 .more-hint span{width:36px;height:36px;border-radius:50%;background:var(--accent-soft);display:flex;align-items:center;justify-content:center}   /* there is more of the passuk below: shown until the reader has scrolled to the end */
 .more-hint.on{pointer-events:auto}
@@ -486,6 +508,11 @@ input[type=range]{width:100%;height:32px;accent-color:var(--accent);margin:0}
 
   <section class="reader" id="reader">
   <button class="back" id="back" data-ta="prevAria"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5"/><path d="m5 12 7-7 7 7"/></svg></button>
+  <div class="setchip" id="setChip" hidden>
+    <svg class="sring" viewBox="0 0 36 36" aria-hidden="true"><circle class="t" cx="18" cy="18" r="14"/><circle class="f" id="scRing" cx="18" cy="18" r="14" transform="rotate(-90 18 18)"/></svg>
+    <span id="scT"></span><small id="scN"></small>
+    <button class="sc-x" id="scX" data-ta="setLeave"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
+  </div>
   <div class="stage-wrap" id="stageWrap">
   <button class="more-hint" id="moreHint" tabindex="-1" aria-hidden="true"><span><svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></span></button>
   <button class="more-hint up" id="lessHint" tabindex="-1" aria-hidden="true"><span><svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></span></button>
@@ -536,6 +563,9 @@ input[type=range]{width:100%;height:32px;accent-color:var(--accent);margin:0}
       <button class="selbtn" id="selToggle" aria-pressed="false" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3.5 6.5 2 2 3.5-4"/><path d="m3.5 14.5 2 2 3.5-4"/><path d="M13 7h8"/><path d="M13 15h8"/></svg></button>
       <button class="icon-btn sheet-close" aria-label="Close"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
     </div>
+  </div>
+  <div class="seg pk-view" id="pkView" role="group" data-key="pkview" data-ta="setViewAria" hidden>
+    <button data-v="all"></button><button data-v="week"></button><button data-v="month"></button>
   </div>
   <div class="week-row" id="weekRow" hidden>
     <button class="btn solid week" id="thisWeek" hidden>
@@ -665,7 +695,7 @@ input[type=range]{width:100%;height:32px;accent-color:var(--accent);margin:0}
       <button class="btn" id="licBtn" data-i="enterCode"></button>
     </div>
     <p class="about" id="about"></p>
-    <p class="about build" id="buildTxt">Build 2026-11-27 12:45 UTC</p>
+    <p class="about build" id="buildTxt">Build 2026-11-28 17:12 UTC</p>
   </div>
 </section>
 
@@ -677,6 +707,7 @@ input[type=range]{width:100%;height:32px;accent-color:var(--accent);margin:0}
 var IDX = JSON.parse(document.getElementById('app-index').textContent), CFG = IDX.cfg, TX = CFG.t;
 var P = IDX.units, BY = {}, MAIN = [], TOTAL = 0;
 P.forEach(function(p, i){ p.i = i; BY[p.slug] = p; if (!p.aux){ MAIN.push(p.slug); TOTAL += p.aliyot.length; } });
+if (CFG.advance === 'next') TOTAL = MAIN.length;   /* in a sequence of perakim, a perek is one unit even when it has two parts (Tehillim 119) */
 /* cfg.track: 'complete' (default; done marks, finish screens) or 'practice' (position only, continuous reading, no completion) */
 var PRACTICE = CFG.track === 'practice';
 if (PRACTICE) document.documentElement.classList.add('practice');
@@ -686,10 +717,10 @@ var lastNavAt = 0, GUARD_MS = 400, liveReady = false;   /* a second press right 
 var MODES = CFG.modes || ['full','nikud','plain'], FONTS = CFG.fonts || ['torah','print'];
 var KEY = CFG.key, OLD_KEY = CFG.legacy || '';
 function detectLang(){ try{ var l = (navigator.languages && navigator.languages[0]) || navigator.language || ''; return /^(he|iw)(-|$)/i.test(l) ? 'he' : 'en'; }catch(e){ return 'en'; } }   /* first launch only: a Hebrew phone starts in Hebrew; a saved choice always wins */
-var DEFAULTS = Object.assign({mode:'full', font:'torah', size:34, theme:'auto', wake:true, lang:detectLang(), accent:'blue', kq:false, where:detectIsrael() ? 'il' : 'dia'}, CFG.defaults || {});
+var DEFAULTS = Object.assign({mode:'full', font:'torah', size:34, theme:'auto', wake:true, lang:detectLang(), accent:'blue', kq:false, pkview:'all', where:detectIsrael() ? 'il' : 'dia'}, CFG.defaults || {});
 var SAMPLE = CFG.sample;
 var settings = Object.assign({}, DEFAULTS);
-var state = {slug:MAIN[0], a:0, verse:0, finished:false, main:MAIN[0]};
+var state = {slug:MAIN[0], a:0, verse:0, finished:false, main:MAIN[0], set:null, setDone:false};
 var ACCENTS = {   /* [accent, gradient from, gradient to, soft tint, tonal tint, rgb for shadows, ring from, ring to] for light and dark */
   blue:   {l:['#4A6CF7','#5B7DFA','#3E8CF2','#E8EEFF','#DCE5FF','62,108,242','#5B7DFA','#3EC3C8'],  d:['#7C9BFF','#7C9BFF','#5AA9FF','#1F2B4D','#243360','90,140,255','#7C9BFF','#5CD3D8']},
   purple: {l:['#7255EB','#8A6CF5','#6A4DE3','#EFEAFF','#E3DAFF','106,77,227','#8A6CF5','#C77DF0'],  d:['#A58BFF','#A58BFF','#8C72FF','#2A2350','#34296E','140,114,255','#A58BFF','#D98BFF']},
@@ -871,7 +902,11 @@ function applyLockedUI(){ if (openId === 'picker') refreshPicker(); }
 function el(tag, cls, text){ var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
 function plural(n, one, many){ return n + ' ' + (n === 1 ? one : many); }
 function dset(slug){ return done[slug] || (done[slug] = new Set()); }
-function totalDone(){ var n = 0; for (var k in done) if (BY[k] && !BY[k].aux) n += done[k].size; return n; }
+function totalDone(){
+  var n = 0, seq = CFG.advance === 'next';
+  for (var k in done) if (BY[k] && !BY[k].aux) n += seq ? (done[k].size === BY[k].aliyot.length ? 1 : 0) : done[k].size;
+  return n;
+}
 
 /* ---------- text helpers ---------- */
 var TAAMIM = /[֑-ֽׅ֯ׄ]/g;   /* teamim, plus silluk and meteg */
@@ -913,7 +948,7 @@ function fmt(t){
 function save(){
   try{
     var d = {}; for (var k in done) if (done[k].size) d[k] = Array.from(done[k]);
-    localStorage.setItem(KEY, JSON.stringify({slug:state.slug, main:state.main, a:state.a, verse:state.verse, done:d, settings:settings}));
+    localStorage.setItem(KEY, JSON.stringify({slug:state.slug, main:state.main, a:state.a, verse:state.verse, done:d, settings:settings, sf:sf, set:state.set, sd:state.setDone ? 1 : 0}));
   }catch(e){}
 }
 function readSettings(s){
@@ -927,6 +962,7 @@ function readSettings(s){
   if (typeof s.kq === 'boolean') settings.kq = s.kq;
   if (ACCENTS[s.accent]) settings.accent = s.accent;
   if (s.where === 'il' || s.where === 'dia') settings.where = s.where;
+  if (['all','week','month'].indexOf(s.pkview) > -1) settings.pkview = s.pkview;
 }
 function load(){
   try{
@@ -934,6 +970,7 @@ function load(){
     if (raw){
       var o = JSON.parse(raw);
       readSettings(o.settings);
+      loadSets(o);
       if (!PRACTICE && o.done && typeof o.done === 'object') Object.keys(o.done).forEach(function(slug){
         var p = BY[slug]; if (!p || !Array.isArray(o.done[slug])) return;
         o.done[slug].forEach(function(i){ if (Number.isInteger(i) && i >= 0 && i < p.aliyot.length) dset(slug).add(i); });
@@ -1002,6 +1039,183 @@ function curP(){ return BY[state.slug]; }
 function curA(){ return curP().aliyot[state.a]; }
 function curVerses(){ var a = curA(); return cache[state.slug].slice(a.s, a.e + 1); }
 
+
+/* ---------- sets: Tehillim by day of the week and day of the Hebrew month (cfg.sets) ----------
+   The same perakim are always ticked in the main tally (done[]). A set also keeps its own fill, sf, which belongs to the
+   current week (Sunday to Saturday) or Hebrew month and starts empty when that is over. Reading a set is something the reader
+   chooses with Start; state.set remembers it (and where to go back to) until they leave it. */
+var SETS = !!CFG.sets;
+var WEEK_SETS = [[1,29],[30,50],[51,72],[73,89],[90,106],[107,119],[120,150]];   /* Sunday ... Shabbat */
+var MONTH_SETS = [[1,9],[10,17],[18,22],[23,28],[29,34],[35,38],[39,43],[44,48],[49,54],[55,59],[60,65],[66,68],[69,71],[72,76],[77,78],[79,82],[83,87],[88,89],[90,96],[97,103],[104,105],[106,107],[108,112],[113,118],[119,119,0],[119,119,1],[120,134],[135,139],[140,144],[145,150]];
+var BOOK_RANGES = [[1,41],[42,72],[73,89],[90,106],[107,150]];
+var sf = {};                 /* {w:{c:cycle, d:{id:['p51:0', ...]}}, m:{...}} */
+function rangeItems(r){
+  var out = [];
+  for (var n = r[0]; n <= r[1]; n++){ var sl = 'p' + n; if (!BY[sl]) continue; if (r.length > 2) out.push([sl, r[2]]); else for (var a = 0; a < BY[sl].aliyot.length; a++) out.push([sl, a]); }
+  return out;
+}
+function rangeLabel(r){ return r.length > 2 ? '119 · ' + (r[2] === 0 ? '1–96' : '97–176') : (r[0] === r[1] ? String(r[0]) : r[0] + '–' + r[1]); }
+function hebParts(d){
+  try{
+    var f = new Intl.DateTimeFormat('en-u-ca-hebrew', {year:'numeric', month:'long', day:'numeric'});
+    if (f.resolvedOptions().calendar !== 'hebrew') return null;
+    var o = {}; f.formatToParts(d).forEach(function(q){ o[q.type] = q.value; });
+    var day = parseInt(o.day, 10); if (!day || !o.month) return null;
+    return {y:o.year || o.relatedYear || '', m:o.month, d:day};
+  }catch(e){ return null; }
+}
+function hebMonthLen(h){ var t = new Date(); t.setDate(t.getDate() + (30 - h.d)); var q = hebParts(t); return (q && q.m === h.m && q.y === h.y && q.d === 30) ? 30 : 29; }
+function monthAvailable(){ return !!hebParts(new Date()); }
+function weekCycle(){ var d = new Date(); d.setDate(d.getDate() - d.getDay()); return ymd(d); }
+function monthCycle(){ var h = hebParts(new Date()); return h ? h.y + '-' + h.m : ''; }
+function setGroups(kind){      /* [{k, id, name, rng, items:[[slug, part]], today}] */
+  var out = [], now = new Date();
+  if (kind === 'w'){
+    var names = (tx(null, 'setDays') || '').split('|');
+    WEEK_SETS.forEach(function(r, i){ out.push({k:'w', id:String(i), name:names[i] || '', rng:rangeLabel(r), items:rangeItems(r), today:i === now.getDay()}); });
+    return out;
+  }
+  var h = hebParts(now), len = h ? hebMonthLen(h) : 30;
+  MONTH_SETS.forEach(function(r, i){
+    var day = i + 1, items = rangeItems(r), rng = rangeLabel(r);
+    if (len === 29 && day === 30) return;
+    if (len === 29 && day === 29){ var r2 = MONTH_SETS[29]; items = items.concat(rangeItems(r2)); rng = r[0] + '–' + r2[1]; }   /* a 29-day month says day 30 with day 29 */
+    out.push({k:'m', id:String(day), name:tx(null, 'setDay', {n:lang() === 'he' ? heNum(day) : day}), rng:rng, items:items, today:!!h && h.d === day});
+  });
+  return out;
+}
+function setCycle(k){ return k === 'w' ? weekCycle() : monthCycle(); }
+function fillOf(k, id){
+  var c = setCycle(k);
+  if (!sf[k] || sf[k].c !== c) sf[k] = {c:c, d:{}};
+  return sf[k].d[id] || (sf[k].d[id] = []);
+}
+function fillCount(g){ var f = fillOf(g.k, g.id), n = 0; g.items.forEach(function(it){ if (f.indexOf(it[0] + ':' + it[1]) > -1) n++; }); return n; }
+function setGroup(){
+  if (!SETS || !state.set) return null;
+  var gs = setGroups(state.set.k);
+  for (var i = 0; i < gs.length; i++) if (gs[i].id === state.set.id) return gs[i];
+  return null;
+}
+function setIdx(g, slug, a){ for (var i = 0; i < g.items.length; i++) if (g.items[i][0] === slug && g.items[i][1] === a) return i; return -1; }
+function setName(g){ return g.k === 'w' ? tx(null, 'setNameWeek', {d:g.name}) : tx(null, 'setNameMonth', {d:lang() === 'he' ? heNum(+g.id) : g.id}); }
+function setPerek(slug, a){ var p = BY[slug]; return tx(null, 'pkWord') + ' ' + (lang() === 'he' ? p.he : p.num); }
+function setItem(it){
+  state.slug = it[0]; state.main = it[0]; state.a = it[1]; state.verse = 0; state.finished = false; state.setDone = false;
+  save(); render(true); focusNext();
+}
+function firstOpenItem(g){ var f = fillOf(g.k, g.id); for (var i = 0; i < g.items.length; i++) if (f.indexOf(g.items[i][0] + ':' + g.items[i][1]) < 0) return i; return -1; }
+function startSet(k, id){
+  var g = null; setGroups(k).forEach(function(x){ if (x.id === id) g = x; });
+  if (!g || !g.items.length) return;
+  var f = fillOf(k, id), at = firstOpenItem(g);
+  if (at < 0){ f.length = 0; at = 0; }                 /* everything was done: a new pass starts empty */
+  var back = state.set ? state.set.back : {slug:state.slug, a:state.a, verse:state.verse};
+  state.set = {k:k, id:id, back:back}; state.setDone = false;
+  closeSheets(true); setItem(g.items[at]);
+}
+function leaveSet(toBack){
+  var b = state.set && state.set.back; state.set = null; state.setDone = false;
+  if (toBack && b && BY[b.slug]){ state.slug = b.slug; state.main = b.slug; state.a = b.a; state.verse = b.verse; state.finished = false; }
+  save(); render(true);
+}
+function completeSetItem(slug, a){         /* the tick is already in the main tally; returns true when the set took over */
+  var g = setGroup(); if (!g){ state.set = null; return false; }
+  var f = fillOf(g.k, g.id), key = slug + ':' + a; if (f.indexOf(key) < 0) f.push(key);
+  var nx = null, j;
+  for (j = setIdx(g, slug, a) + 1; j < g.items.length && !nx; j++) if (f.indexOf(g.items[j][0] + ':' + g.items[j][1]) < 0) nx = g.items[j];
+  if (!nx){ j = firstOpenItem(g); if (j > -1) nx = g.items[j]; }
+  if (nx){ state.slug = nx[0]; state.main = nx[0]; state.a = nx[1]; state.verse = 0; } else state.setDone = true;
+  save(); render(true);
+  $('#live').textContent = tx(null, 'toastDone', {part:setPerek(slug, a)});
+  return true;
+}
+function loadSets(o){
+  if (!SETS) return;
+  ['w', 'm'].forEach(function(k){
+    var x = o.sf && o.sf[k]; if (!x || typeof x.c !== 'string' || !x.d || typeof x.d !== 'object') return;
+    var d = {}; Object.keys(x.d).forEach(function(id){ if (Array.isArray(x.d[id])) d[id] = x.d[id].filter(function(t){ return typeof t === 'string'; }); });
+    sf[k] = {c:x.c, d:d};
+  });
+  var t = o.set;
+  if (t && (t.k === 'w' || t.k === 'm') && typeof t.id === 'string' && t.back && BY[t.back.slug]){
+    state.set = {k:t.k, id:t.id, back:{slug:t.back.slug, a:Number.isInteger(t.back.a) ? t.back.a : 0, verse:Number.isInteger(t.back.verse) ? t.back.verse : 0}};
+    state.setDone = !!o.sd;
+  }
+}
+function renderSetChip(){
+  var c = $('#setChip'); if (!c) return;
+  var g = (!state.finished && !state.setDone) ? setGroup() : null;
+  if (!g){ c.hidden = true; return; }
+  var n = g.items.length, d = fillCount(g), i = Math.max(0, setIdx(g, state.slug, state.a)) + 1;
+  c.hidden = false; $('#scT').textContent = setName(g); $('#scN').textContent = tx(null, 'setOf', {i:Math.min(i, n), n:n});
+  var ring = $('#scRing'), len = 2 * Math.PI * 14; ring.style.strokeDasharray = (len * d / n) + ' ' + len;
+}
+/* the picker: All (the five books, the main tally), Week and Month */
+var setSig = '';
+function groupHead(name, rng, today, tag){
+  var h = el(tag, 'sg-h'); h.appendChild(el('b', null, name)); h.appendChild(el('span', null, rng));
+  if (today) h.appendChild(el('em', null, tx(null, 'setToday')));
+  h.appendChild(el('i', 'cnt'));
+  return h;
+}
+function setCell(slug, a, rng){
+  var p = BY[slug], c = el('button', 'cell scell'); c.dataset.slug = slug; c.dataset.a = a;
+  var cn = el('span', 'cn', p.he); cn.lang = 'he'; c.appendChild(cn);
+  c.appendChild(el('span', 'cd', p.aliyot.length > 1 ? p.aliyot[a].n : (p.num || '')));
+  return c;
+}
+function buildSetViews(){
+  var box = $('#plist'); ['viewWeek', 'viewMonth'].forEach(function(id){ var o = document.getElementById(id); if (o) o.parentNode.removeChild(o); });
+  [['w', 'viewWeek'], ['m', 'viewMonth']].forEach(function(kv){
+    if (kv[0] === 'm' && !monthAvailable()) return;
+    var v = el('div'); v.id = kv[1]; v.hidden = true;
+    setGroups(kv[0]).forEach(function(g){
+      var w = el('div', 'sgroup' + (g.today ? ' today' : '')); w.dataset.k = g.k; w.dataset.id = g.id;
+      var h = groupHead(g.name, g.rng, g.today, 'button'); h.dataset.k = g.k; h.dataset.id = g.id; h.classList.add('sg-go'); h.appendChild(iconSvg('<path d="m9 6 6 6-6 6"/>'));
+      w.appendChild(h);
+      var gd = el('div', 'grid');
+      g.items.forEach(function(it){ var c = setCell(it[0], it[1]); c.dataset.k = g.k; c.dataset.id = g.id; gd.appendChild(c); });
+      w.appendChild(gd);
+      if (g.today){ var b = el('button', 'sg-start'); b.dataset.k = g.k; b.dataset.id = g.id; w.appendChild(b); }
+      v.appendChild(w);
+    });
+    box.appendChild(v);
+  });
+  setSig = weekCycle() + '|' + monthCycle() + '|' + setGroups('m').length;
+}
+function updateSetViews(){
+  if (!SETS) return;
+  var sig = weekCycle() + '|' + monthCycle() + '|' + setGroups('m').length;
+  if (sig !== setSig) buildSetViews();
+  var v = settings.pkview; if (v === 'month' && !monthAvailable()) v = settings.pkview = 'all';
+  $('#viewAll').hidden = v !== 'all'; var vw = document.getElementById('viewWeek'), vm = document.getElementById('viewMonth');
+  if (vw) vw.hidden = v !== 'week'; if (vm) vm.hidden = v !== 'month';
+  $('#pkView').hidden = selecting; $('#pkView').querySelector('[data-v="month"]').hidden = !monthAvailable();
+  document.querySelectorAll('#plist .sgroup').forEach(function(w){
+    var k = w.dataset.k, id = w.dataset.id, g = null; setGroups(k).forEach(function(x){ if (x.id === id) g = x; });
+    if (!g) return;
+    var f = fillOf(k, id), n = 0;
+    w.querySelectorAll('.scell').forEach(function(c){
+      var on = f.indexOf(c.dataset.slug + ':' + c.dataset.a) > -1; if (on) n++;
+      c.classList.toggle('done', on); c.classList.toggle('current', c.dataset.slug === state.slug && +c.dataset.a === state.a);
+    });
+    var cnt = w.querySelector('.cnt'); cnt.textContent = n ? n + '/' + g.items.length : ''; cnt.classList.toggle('set', n > 0 && n === g.items.length);
+    var st = w.querySelector('.sg-start');
+    if (st){ var at = firstOpenItem(g); st.textContent = at < 0 ? tx(null, 'setAgain') : tx(null, n ? 'setContinue' : 'setStart', {name:setPerek(g.items[at][0], g.items[at][1])}); }
+  });
+  document.querySelectorAll('#viewAll .bgroup').forEach(function(w){
+    var r = BOOK_RANGES[+w.dataset.b], n = 0; for (var q = r[0]; q <= r[1]; q++) if (dset('p' + q).size === BY['p' + q].aliyot.length) n++;
+    w.querySelector('.cnt').textContent = n + '/' + (r[1] - r[0] + 1);
+  });
+}
+function pkViewText(){
+  if (!SETS) return;
+  var b = $('#pkView').querySelectorAll('button'); b[0].textContent = tx(null, 'setAll'); b[1].textContent = tx(null, 'setWeek'); b[2].textContent = tx(null, 'setMonth');
+  document.querySelectorAll('#viewAll .bgroup').forEach(function(w){ w.querySelector('b').textContent = (tx(null, 'setBooks') || '').split('|')[+w.dataset.b] || ''; });
+  setSig = ''; if ($('#viewWeek') || $('#viewMonth')) buildSetViews();
+}
+
 /* ---------- navigation ---------- */
 function firstUndone(slug){
   var p = BY[slug], s = dset(slug);
@@ -1019,6 +1233,7 @@ function goTo(slug, a){
   if (!canOpen(slug)){ showUnlock(slug); return; }
   if (!BY[slug].aux) state.main = slug;
   state.slug = slug; state.a = (a == null) ? firstUndone(slug) : a; state.verse = 0; state.finished = false;
+  if (state.set){ var sg = setGroup(); if (!sg || setIdx(sg, slug, state.a) < 0) state.set = null; state.setDone = false; }   /* leaving the set's perakim ends the set */
   save(); render(true);
 }
 function next(){
@@ -1057,11 +1272,16 @@ function completeAliyah(){
   var slug = state.slug, a = state.a, p = BY[slug], name = curA().n || p.en;
   var was = dset(slug).has(a);
   dset(slug).add(a);
+  if (state.set && completeSetItem(slug, a)) return;
  
   if (seqMode(p)){
-    var u = nextUndoneUnit(slug);
+    var t0 = nextTarget(slug, a), u = null;
+    if (dset(slug).size < p.aliyot.length && t0 !== null){ state.a = t0; state.verse = 0; }   /* a perek with two parts: finish both before moving on */
+    else {
+    u = nextUndoneUnit(slug);
     if (u === null) state.finished = true;
     else { state.slug = u; state.main = u; state.a = firstUndone(u); state.verse = 0; }
+    }
   } else {
     var t = nextTarget(slug, a);
     if (dset(slug).size === p.aliyot.length || t === null){ state.finished = true; }
@@ -1071,6 +1291,7 @@ function completeAliyah(){
   $('#live').textContent = tx(p, 'toastDone', {part:name});
 }
 function randomUnit(){
+  state.set = null; state.setDone = false;
   var pool = [], i;
   for (i = 0; i < MAIN.length; i++) if (MAIN[i] !== state.slug && dset(MAIN[i]).size < BY[MAIN[i]].aliyot.length) pool.push(MAIN[i]);
   if (!pool.length) for (i = 0; i < MAIN.length; i++) if (MAIN[i] !== state.slug) pool.push(MAIN[i]);
@@ -1300,6 +1521,7 @@ function openSheet(id){
     refreshPicker();
     var cur = s.querySelector('.prow.current');
     if (cur && cur.scrollIntoView) cur.scrollIntoView({block:'center'});
+    var td = SETS && settings.pkview !== 'all' && s.querySelector('#plist > div:not([hidden]) .sgroup.today'); if (td) td.scrollIntoView({block:'start'});
   }
   var c = s.querySelector('.sheet-close'); if (c) c.focus({preventScroll:true});
 }
@@ -1413,11 +1635,23 @@ function render(animate){
   $('#overall').hidden = true;   /* the running total lives in the picker */
   $('#ovTxt').textContent = seqMode(p) ? tx(p, 'overall', {n:totalDone(), t:TOTAL}) : tx(p, 'overall', {n:dset(p.slug).size, t:p.aliyot.length});
 
-  var fin = state.finished;
+  var fin = state.finished || state.setDone;
+  renderSetChip();
   updateRecUI();
   document.documentElement.classList.toggle('is-finish', fin);
   $('#finish').hidden = !fin; $('#back').hidden = fin; $('#navdown').hidden = fin; $('#modebar').hidden = fin || MODES.length < 2; $('#tally').hidden = fin; $('#ref').hidden = fin; $('#pcard').hidden = fin;
   $('#chips').hidden = fin || p.aliyot.length < 2;
+  if (fin && state.setDone && !state.finished){      /* the end of a set: choose a perek (the All view) or go back to where you were */
+    var g0 = setGroup(), ns = {}; if (g0) g0.items.forEach(function(it){ ns[it[0]] = 1; });
+    $('#verse').hidden = true; $('#status').hidden = true; $('#overall').hidden = true; $('#finish').classList.remove('glob');
+    $('#finMark').hidden = false; $('#finCount').hidden = true;
+    $('#finHeb').textContent = tx(p, 'finHeb'); $('#finHeb').hidden = !tx(p, 'finHeb');
+    $('#finTitle').hidden = false; $('#finSub').hidden = false;
+    $('#finTitle').textContent = tx(null, 'setDoneTitle', {name:g0 ? setName(g0) : ''}); var np = Object.keys(ns).length; $('#finSub').textContent = np === 1 ? tx(null, 'setDoneOne') : tx(null, 'setDoneSub', {n:np});
+    $('#nextParsha').textContent = tx(null, 'setChoose'); $('#nextParsha').removeAttribute('aria-label');
+    $('#chooseParsha').textContent = tx(null, 'setBack'); $('#chooseParsha').removeAttribute('aria-label'); $('#chooseParsha').hidden = false; $('#again').hidden = true;
+    return;
+  }
   if (fin){
     $('#verse').hidden = true; $('#status').hidden = true;
     var glob = seqMode(p), nx = BY[nextParshaSlug(p.slug)];
@@ -1525,14 +1759,21 @@ function moreHint(){     /* the small arrow at the foot of the verse box: on whi
 
 /* ---------- picker ---------- */
 function buildPicker(){
-  var box = $('#plist'), list = null, cur = null, grid = CFG.picker === 'grid';
-  if (grid){ list = el('div', 'grid'); box.appendChild(list); }
+  var box = $('#plist'), list = null, cur = null, grid = CFG.picker === 'grid', books = [];
+  if (grid && SETS){
+    var va = el('div'); va.id = 'viewAll'; box.appendChild(va);
+    BOOK_RANGES.forEach(function(r, bi){
+      var bg = el('div', 'bgroup'); bg.dataset.b = bi; bg.appendChild(groupHead('', r[0] + '–' + r[1], false, 'div'));
+      var gd = el('div', 'grid'); bg.appendChild(gd); va.appendChild(bg); books.push(gd);
+    });
+  } else if (grid){ list = el('div', 'grid'); box.appendChild(list); }
   P.forEach(function(p){
     if (p.aux) return;
     if (grid){
       var c = el('button', 'cell'); c.dataset.slug = p.slug;
       var cn = el('span', 'cn', p.he); cn.lang = 'he'; c.appendChild(cn); c.appendChild(el('span', 'cd', p.num || '')); var ck = el('span', 'ck'); ck.appendChild(iconSvg(CHECK)); c.appendChild(ck);
-      list.appendChild(c); return;
+      if (SETS){ var bi2 = 0; BOOK_RANGES.forEach(function(r, bi){ if (+p.num >= r[0] && +p.num <= r[1]) bi2 = bi; }); books[bi2].appendChild(c); } else list.appendChild(c);
+      return;
     }
     if (p.group !== cur){
       cur = p.group;
@@ -1548,6 +1789,7 @@ function buildPicker(){
     b.appendChild(names); b.appendChild(el('span', 'p-prog'));
     list.appendChild(b);
   });
+  if (grid && SETS){ buildSetViews(); pkViewText(); }
   function unmarkRow(e){
     var u = e.target.closest('.unmark'); if (!u) return false;
     var r = u.closest('.prow, .cell'); e.preventDefault(); e.stopPropagation();
@@ -1557,9 +1799,10 @@ function buildPicker(){
   box.addEventListener('keydown', function(e){ if ((e.key === 'Enter' || e.key === ' ') && e.target.closest('.unmark')) unmarkRow(e); });
   box.addEventListener('click', function(e){
     if (unmarkRow(e)) return;
+    var sh = e.target.closest('.sg-go, .sg-start'); if (sh && SETS){ startSet(sh.dataset.k, sh.dataset.id); return; }
     var b = e.target.closest('.prow, .cell'); if (!b) return;
     if (selecting){ togglePend(b.dataset.slug); return; }
-    closeSheets(true); goTo(b.dataset.slug);
+    closeSheets(true); goTo(b.dataset.slug, b.dataset.a != null ? +b.dataset.a : undefined);
     if (!openId) focusNext();
   });
 }
@@ -1572,7 +1815,7 @@ function updateSelUI(){
   $('#selApply').disabled = pend.size === 0; $('#selN').textContent = pend.size ? String(pend.size) : '';
   $('#plist').classList.toggle('editing', selecting);
 }
-function setSelecting(on){ selecting = !!on; if (!selecting) pend.clear(); refreshPicker(); updateSelUI(); }
+function setSelecting(on){ selecting = !!on; if (on && SETS){ settings.pkview = 'all'; applySettings(); } if (!selecting) pend.clear(); refreshPicker(); updateSelUI(); }
 function togglePend(slug){
   var want = !wantDone(slug);
   if (want === isDone(slug)) pend.delete(slug); else pend.set(slug, want);
@@ -1589,6 +1832,7 @@ function applyPend(){
 function refreshPicker(){
   var rows = $('#plist').querySelectorAll('.prow, .cell');
   for (var i = 0; i < rows.length; i++){
+    if (rows[i].classList.contains('scell')) continue;
     var r = rows[i], p = BY[r.dataset.slug], n = dset(p.slug).size, all = (selecting ? wantDone(p.slug) : n === p.aliyot.length), multi = p.aliyot.length > 1;
     r.classList.toggle('done', all); r.classList.toggle('current', p.slug === state.slug); r.classList.toggle('chg', selecting && pend.has(p.slug));
     var um = r.querySelector('.unmark');
@@ -1613,6 +1857,7 @@ function refreshPicker(){
     r.setAttribute('aria-label', nm(p) + (all ? ', done' : (n && multi ? ', ' + n + ' of ' + p.aliyot.length + ' done' : '')) + (lk ? ', locked' : '') + (p.slug === state.slug ? ', current' : ''));
   }
   $('#pcTxt').textContent = tx(null, 'pickerCount', {n:totalDone(), t:TOTAL});
+  updateSetViews();
   var w = comingShabbat(), btn = $('#thisWeek');
   if (w){
     btn.hidden = false; btn.dataset.slug = w.slugs[0];
@@ -1693,8 +1938,9 @@ function bind(){
     seg.addEventListener('click', function(e){
       var b = e.target.closest('button'); if (!b) return;
       settings[seg.dataset.key] = b.dataset.v; save();
-      if (seg.dataset.key === 'lang'){ applyText(); applySettings(); refreshPicker(); }
+      if (seg.dataset.key === 'lang'){ applyText(); applySettings(); pkViewText(); refreshPicker(); }
       else if (seg.dataset.key === 'where'){ applySettings(); refreshPicker(); }
+      else if (seg.dataset.key === 'pkview'){ applySettings(); refreshPicker(); var tg = document.querySelector('#plist > div:not([hidden]) .sgroup.today'); if (tg) tg.scrollIntoView({block:'start'}); else $('#picker .sheet-body').scrollTop = 0; return; }
       else applySettings();
       render(false);
     });
@@ -1704,6 +1950,7 @@ function bind(){
   $('#swatches').addEventListener('click', function(e){ var b = e.target.closest('button'); if (!b) return; settings.accent = b.dataset.v; save(); applySettings(); });
   bindRec();
   $('#selCancel').addEventListener('click', function(){ setSelecting(false); });
+  if (SETS){ $('#scX').addEventListener('click', function(){ leaveSet(false); }); }
   $('#selApply').addEventListener('click', applyPend);
   $('#wake').addEventListener('click', function(){ settings.wake = !settings.wake; save(); applySettings(); });
   function flipKq(e){ kqFlip = !kqFlip; var kb = e && e.type === 'keydown'; render(false); if (kb){ var f = document.querySelector('#verse .kq'); if (f) f.focus({preventScroll:true}); } }
@@ -1736,10 +1983,12 @@ function bind(){
   });
 
   $('#nextParsha').addEventListener('click', function(){
+    if (state.setDone){ leaveSet(false); settings.pkview = 'all'; save(); applySettings(); openSheet('picker'); return; }
     if (seqMode(curP())){ done = {}; state.finished = false; goTo(MAIN[0], 0); }
     else goTo(nextParshaSlug(state.slug));
   });
   $('#chooseParsha').addEventListener('click', function(){
+    if (state.setDone){ leaveSet(true); return; }
     if (seqMode(curP())){ state.finished = false; save(); render(true); } else openSheet('picker');
   });
   $('#again').addEventListener('click', function(){ dset(state.slug).clear(); goTo(state.slug, 0); });
